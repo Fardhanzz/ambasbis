@@ -1,0 +1,10 @@
+daftar perbaikan:
+1. untuk setiap tugas yang ada, tambahkan tombol selesai, bilamana sudah melebihi deadline, tetap ada tombol selesainya, namun diberi peringatan "anda terlambat menyelesaikan tugas ini"
+2. notifikasi hanya muncul saat h-3, h-1, dan hari h
+3. persentase sedang mengerjakan dihapus/dihilangkan
+4. tambahkan fitur tambah mata pelajaran, jangan hanya monoton dengan 5 mapel tersebut, nanti bila user login atau signup, akan ditanyakan apa saja mata pelajarannya.
+5. hapus fitur prioritas tugas (rendah, sedang, tinggi) dari pembuatan tugas baru dan seluruh tampilan terkait
+6. hapus fitur estimasi waktu pengerjaan dari pembuatan tugas baru dan rincian tugas
+7. hapus menu dashboard visual guide dan badge tulisan live server di header atas
+8. mengganti keseluruhan nama proyek dari TASKORA ke AMBASBIS (branding, logo A, title, notifikasi, dan data storage)
+9. menambahkan fitur autentikasi Google Firebase (Google SSO popup, email/password, auth listener, profil terautentikasi, logout, dan demo mode fallback)

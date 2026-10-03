@@ -1,0 +1,1692 @@
+You are the lead product engineer, senior full-stack developer, UI/UX designer, software architect, and product-minded engineering lead for this project.
+
+You are building TASKORA, a student task and deadline management web application.
+
+IMPORTANT:
+The attached PRD_v2.md is the primary product specification and source of truth.
+
+You must read PRD_v2.md completely before making significant implementation decisions.
+
+The visual reference image provided with this project is also an important design reference.
+
+Your responsibility is not simply to generate code.
+
+Your responsibility is to build a coherent, maintainable, secure, responsive, production-quality MVP.
+
+Think like:
+- a senior product engineer
+- a senior UI/UX designer
+- a security-conscious backend engineer
+- a frontend architect
+- a QA engineer
+
+Do not blindly follow instructions if doing so would produce fragile architecture or poor UX.
+
+Make reasonable engineering decisions when the PRD leaves implementation details unspecified.
+
+==================================================
+0. PRIMARY OBJECTIVE
+==================================================
+
+Build TASKORA as a real multi-user web application.
+
+The core experience is:
+
+CAPTURE
+→ ORGANIZE
+→ PRIORITIZE
+→ ACT
+→ COMPLETE
+
+The application should solve a simple but important student problem:
+
+"I have too many assignments and deadlines, and I keep forgetting what I need to do."
+
+TASKORA should answer:
+
+"What do I need to do right now?"
+
+The application must therefore prioritize:
+
+TODAY
+URGENT
+UPCOMING
+
+over overwhelming users with unnecessary information.
+
+==================================================
+1. PRODUCT SOURCE OF TRUTH
+==================================================
+
+The project includes:
+
+PRD_v2.md
+
+Treat it as the primary product specification.
+
+Before coding:
+
+1. Read PRD_v2.md completely.
+2. Understand all product requirements.
+3. Identify functional requirements.
+4. Identify non-functional requirements.
+5. Identify authentication requirements.
+6. Identify database requirements.
+7. Identify notification requirements.
+8. Identify responsive requirements.
+9. Identify design requirements.
+10. Inspect the existing repository.
+
+Do not assume the repository is empty.
+
+If an existing project exists:
+
+- inspect it first
+- understand its architecture
+- preserve useful existing infrastructure
+- avoid unnecessary rewrites
+- identify current dependencies
+- identify existing environment variables
+- identify existing routes/components
+- identify existing database configuration
+
+==================================================
+2. PRODUCT IDENTITY
+==================================================
+
+Product name:
+
+TASKORA
+
+Working tagline:
+
+"Atur tugasmu. Taklukkan deadline."
+
+TASKORA is NOT:
+
+- a corporate project management platform
+- a generic SaaS dashboard
+- a Notion clone
+- a Trello clone
+- a Jira clone
+- an enterprise productivity platform
+
+It is a student-focused task and deadline manager.
+
+The product should feel:
+
+- friendly
+- bold
+- energetic
+- practical
+- memorable
+- slightly playful
+- easy to understand
+
+==================================================
+3. DESIGN DIRECTION
+==================================================
+
+The provided UI reference is important.
+
+Use it as visual inspiration.
+
+Primary design language:
+
+NEO-BRUTALISM
++
+STUDENT PRODUCTIVITY
++
+PLAYFUL EDITORIAL DESIGN
+
+Visual characteristics:
+
+- thick black borders
+- hard offset shadows
+- bold typography
+- pastel colors
+- high contrast
+- large cards
+- tactile controls
+- generous spacing
+- strong hierarchy
+- playful decorative details
+- slightly rounded corners
+
+The UI should look intentional and designed.
+
+Do not generate generic AI-looking interfaces.
+
+Avoid:
+
+- excessive glassmorphism
+- excessive gradients
+- soft floating shadows everywhere
+- generic gray SaaS cards
+- excessive tiny text
+- excessive rounded pills
+- overly minimalist interfaces
+
+==================================================
+4. DESIGN SYSTEM
+==================================================
+
+Use a consistent design token system.
+
+Initial palette:
+
+Background:
+#FFF7F2
+
+Black:
+#171313
+
+Red:
+#E94B43
+
+Yellow:
+#FFD447
+
+Blue:
+#72C7ED
+
+Green:
+#A8E063
+
+Purple:
+#B59AFF
+
+White:
+#FFFFFF
+
+Suggested semantic meaning:
+
+RED
+Urgent
+Overdue
+Critical
+
+YELLOW
+Upcoming
+Warning
+
+BLUE
+Information
+Neutral accent
+
+GREEN
+Completed
+Success
+
+PURPLE
+Special accent
+
+Do not rely only on color to communicate meaning.
+
+Use:
+- labels
+- icons
+- typography
+- status indicators
+
+==================================================
+5. TYPOGRAPHY
+==================================================
+
+Preferred:
+
+Headings:
+Space Grotesk
+
+Body:
+Inter
+
+Alternative:
+Plus Jakarta Sans
+DM Sans
+Archivo
+
+Headings:
+
+font-weight: 800–900
+
+Buttons:
+
+font-weight: 700–800
+
+Keep body text highly readable.
+
+Do not use extremely small typography.
+
+==================================================
+6. BORDER SYSTEM
+==================================================
+
+This is a core part of the visual identity.
+
+Cards:
+
+border: 3px solid #171313
+box-shadow: 6px 6px 0 #171313
+
+Buttons:
+
+border: 3px solid #171313
+box-shadow: 5px 5px 0 #171313
+
+Inputs:
+
+border: 3px solid #171313
+
+Dialogs:
+
+border: 3px solid #171313
+box-shadow: 8px 8px 0 #171313
+
+Avoid relying on blurred shadows.
+
+==================================================
+7. INTERACTION LANGUAGE
+==================================================
+
+The interface should feel tactile.
+
+Buttons should:
+
+Normal:
+have visible hard shadow.
+
+Hover:
+move slightly toward the shadow.
+
+Pressed:
+reduce shadow and translate toward the shadow.
+
+Example:
+
+Normal:
+
+[ BUTTON ]
+    █████
+
+Pressed:
+
+[ BUTTON ]
+
+Use subtle transitions.
+
+Do not over-animate the interface.
+
+==================================================
+8. RESPONSIVE DESIGN
+==================================================
+
+Desktop:
+
+Use a left sidebar.
+
+Mobile:
+
+Use a bottom navigation.
+
+Navigation:
+
+Dashboard
+Tasks
+Calendar
+Notifications
+Settings
+
+The Add Task action must remain easily accessible.
+
+Minimum comfortable touch target:
+
+44px
+
+Avoid unnecessary horizontal scrolling.
+
+Design mobile intentionally.
+
+Do not simply shrink desktop layouts.
+
+==================================================
+9. AUTHENTICATION IS MANDATORY
+==================================================
+
+Authentication is NOT optional.
+
+This is a real multi-user application.
+
+Do NOT build a fake authentication system.
+
+Do NOT use:
+
+- fake users
+- hard-coded demo authentication
+- localStorage as the primary user database
+- client-only authorization
+- hard-coded user IDs
+
+Use a reputable managed authentication provider if appropriate.
+
+Potential architecture:
+
+Next.js
++
+TypeScript
++
+React
++
+Tailwind CSS
++
+Managed Authentication
++
+PostgreSQL / Supabase-like database
+
+However:
+
+Inspect the existing environment first.
+
+Do not install unnecessary infrastructure.
+
+==================================================
+10. AUTHENTICATION METHODS
+==================================================
+
+MVP should support:
+
+1. Email + password
+2. Google Sign-In where supported
+3. Logout
+4. Persistent session
+5. Password recovery
+6. Email verification where required by the provider
+
+Authentication UI must match the TASKORA design system.
+
+==================================================
+11. AUTH FLOW
+==================================================
+
+New user:
+
+Landing
+↓
+Register
+↓
+Create account
+↓
+Verification if required
+↓
+Onboarding
+↓
+Create/select subjects
+↓
+Dashboard
+
+Returning user:
+
+Landing
+↓
+Login
+↓
+Restore session
+↓
+Dashboard
+
+Logout:
+
+Dashboard
+↓
+Settings
+↓
+Logout
+↓
+Session cleared
+↓
+Login/Landing
+
+==================================================
+12. AUTHORIZATION
+==================================================
+
+This is critical.
+
+Every user-owned record must belong to the authenticated user.
+
+Conceptually:
+
+User
+│
+├── Subjects
+│
+├── Tasks
+│   └── Subtasks
+│
+└── Reminders
+
+User A must never be able to access User B's data.
+
+This must be enforced at the server/database layer.
+
+Do NOT rely only on frontend checks.
+
+Never trust a userId sent by the client.
+
+Resolve the authenticated user from the actual session.
+
+Where supported, use row-level security or equivalent database-level authorization.
+
+==================================================
+13. PERSISTENCE
+==================================================
+
+Core user data must persist.
+
+The following must survive:
+
+- page refresh
+- browser restart
+- logout/login
+- normal return visits
+- another supported device using the same account
+
+Persist:
+
+- subjects
+- tasks
+- subtasks
+- status
+- priority
+- deadlines
+- estimated duration
+- notification preferences
+- reminders
+
+localStorage may be used for:
+
+- UI preferences
+- temporary drafts
+- harmless client settings
+
+But NEVER use localStorage as the authoritative database for tasks.
+
+==================================================
+14. DATABASE
+==================================================
+
+Use a relational database.
+
+Suggested model:
+
+Profile
+
+id
+userId
+name
+avatar
+timezone
+createdAt
+
+
+Subject
+
+id
+userId
+name
+color
+createdAt
+
+
+Task
+
+id
+userId
+subjectId
+title
+description
+status
+priority
+deadline
+estimatedMinutes
+createdAt
+updatedAt
+completedAt
+
+
+Subtask
+
+id
+taskId
+title
+completed
+order
+createdAt
+updatedAt
+
+
+Reminder
+
+id
+userId
+taskId
+remindAt
+type
+channel
+sent
+read
+createdAt
+sentAt
+
+
+NotificationPreference
+
+id
+userId
+inAppEnabled
+browserEnabled
+oneDayBefore
+threeHoursBefore
+thirtyMinutesBefore
+overdueEnabled
+
+Use foreign keys.
+
+Use indexes for common queries.
+
+Important indexes:
+
+Task(userId, deadline)
+
+Task(userId, status)
+
+Task(userId, subjectId)
+
+Reminder(userId, remindAt, sent)
+
+Subtask(taskId, order)
+
+Do not use email as a relational key.
+
+Use the auth provider user ID.
+
+==================================================
+15. DASHBOARD
+==================================================
+
+Dashboard is the primary screen.
+
+The user should immediately understand:
+
+"What should I work on?"
+
+Suggested layout:
+
+Greeting
+
+Stats
+
+Urgent task
+
+Today's tasks
+
+Upcoming tasks
+
+Example:
+
+HEY, FARDHAN! 👋
+
+Mari bereskan tugasmu.
+
+[ 07 ]
+TUGAS AKTIF
+
+[ 03 ]
+MENDESAK
+
+[ 05 ]
+SELESAI
+
+
+🔥 YANG HARUS DIKERJAKAN
+
+LAPORAN PRAKTIKUM KIMIA
+
+Kimia
+
+████████████░░░░
+
+75%
+
+DEADLINE BESOK
+
+[ LANJUTKAN → ]
+
+MENDATANG
+
+Matematika
+Latihan halaman 45–47
+Jumat
+
+Presentasi Informatika
+Sabtu
+
+Do not overcrowd the dashboard.
+
+==================================================
+16. TASK SYSTEM
+==================================================
+
+Task fields:
+
+Title
+Description
+Subject
+Deadline date
+Deadline time
+Priority
+Status
+Estimated duration
+Subtasks
+Progress
+Created date
+Completed date
+
+Statuses:
+
+TODO
+IN_PROGRESS
+COMPLETED
+
+Priority:
+
+LOW
+MEDIUM
+HIGH
+
+Urgency:
+
+UPCOMING
+SOON
+URGENT
+OVERDUE
+COMPLETED
+
+Priority and urgency are different concepts.
+
+Do not automatically change user priority based on deadline.
+
+==================================================
+17. CREATE TASK
+==================================================
+
+Required:
+
+Title
+Subject
+Deadline
+Priority
+
+Optional:
+
+Description
+Estimated duration
+Subtasks
+
+The task creation flow must be fast.
+
+Do not force users to fill unnecessary fields.
+
+After saving:
+
+- persist to database
+- update UI
+- update dashboard
+- update calendar
+- create reminder schedule if applicable
+- show success feedback
+
+==================================================
+18. SUBTASKS
+==================================================
+
+Users can break tasks into smaller steps.
+
+Example:
+
+☑ Cari teori
+☑ Buat tabel
+☑ Masukkan data
+□ Pembahasan
+□ Kesimpulan
+
+Progress:
+
+completed subtasks / total subtasks * 100
+
+If no subtasks:
+
+TODO:
+0%
+
+IN_PROGRESS:
+50%
+
+COMPLETED:
+100%
+
+Update progress immediately after subtask changes.
+
+==================================================
+19. URGENCY ENGINE
+==================================================
+
+Implement deterministic urgency logic.
+
+COMPLETED
+→ COMPLETED
+
+Deadline passed
+→ OVERDUE
+
+Deadline <= 24 hours
+→ URGENT
+
+Deadline > 24 hours and <= 72 hours
+→ SOON
+
+Deadline > 72 hours
+→ UPCOMING
+
+Use the user's timezone.
+
+Do not hard-code a global timezone.
+
+==================================================
+20. CALENDAR
+==================================================
+
+MVP:
+
+Month view.
+
+Support:
+
+- previous month
+- next month
+- current date
+- task indicators
+- urgency indicators
+- click date
+- view tasks
+- open task detail
+
+Do not implement drag-and-drop scheduling in MVP.
+
+==================================================
+21. SEARCH AND FILTER
+==================================================
+
+Tasks page:
+
+Search:
+
+- title
+- description
+- subject
+
+Filters:
+
+- status
+- priority
+- subject
+- urgency
+
+Sort:
+
+- deadline nearest
+- deadline farthest
+- newest
+- oldest
+- priority
+
+Search and filtering must work with real persisted data.
+
+==================================================
+22. NOTIFICATION SYSTEM
+==================================================
+
+Notifications are a core product feature.
+
+There are two layers:
+
+LAYER 1:
+In-app notifications
+
+LAYER 2:
+Browser notifications
+
+==================================================
+23. IN-APP POPUP
+==================================================
+
+When the application is open, show a custom popup.
+
+Example:
+
+┌────────────────────────────────────┐
+│ 🔔 DEADLINE BESOK                  │
+│                                    │
+│ LAPORAN KIMIA                      │
+│ Jumat, 23:59                       │
+│                                    │
+│ [ BUKA TUGAS → ]                  │
+└────────────────────────────────────┘
+
+Desktop:
+bottom-right
+
+Mobile:
+respect safe areas.
+
+Use:
+
+- thick border
+- hard shadow
+- accent background
+- task name
+- deadline
+- close button
+- action button
+
+==================================================
+24. REMINDER ENGINE
+==================================================
+
+Default reminders:
+
+24 hours before
+3 hours before
+30 minutes before
+After deadline
+
+Examples:
+
+"Deadline besok"
+
+"Deadline 3 jam lagi"
+
+"Deadline 30 menit lagi"
+
+"Tugas terlambat"
+
+Avoid notification spam.
+
+Do not schedule duplicate reminders.
+
+If a task is completed:
+
+future irrelevant reminders must not fire.
+
+==================================================
+25. BROWSER NOTIFICATIONS
+==================================================
+
+Where supported:
+
+Use:
+
+Notification API
+Service Worker
+Web Push where appropriate
+
+Important:
+
+Do NOT rely only on:
+
+setTimeout()
+setInterval()
+or a browser tab remaining open
+
+for long-term reminder reliability.
+
+Future reminders should be generated using a server-side or scheduled mechanism.
+
+Permission should be requested at an appropriate moment.
+
+Do not repeatedly ask if permission was denied.
+
+Gracefully handle:
+
+- unsupported browsers
+- denied permissions
+- revoked permissions
+- notification failures
+
+Never claim browser notification support is universal.
+
+==================================================
+26. NOTIFICATION CENTER
+==================================================
+
+Header:
+
+notification bell
+
+Click:
+
+notification panel
+
+Show:
+
+- unread
+- read
+- timestamp
+- related task
+- read state
+
+Clicking a notification opens the related task.
+
+==================================================
+27. SUBJECT SYSTEM
+==================================================
+
+Users can:
+
+- create subjects
+- rename subjects
+- delete subjects
+
+Deleting a subject must NOT silently delete its tasks.
+
+Choose a safe behavior such as:
+
+- require reassignment
+OR
+- detach subject from tasks
+
+Document the implementation decision.
+
+==================================================
+28. SETTINGS
+==================================================
+
+Settings should include:
+
+Profile
+
+- name
+- avatar
+- email display
+- timezone
+
+Notifications
+
+- in-app notifications
+- browser notifications
+- reminder preferences
+
+Account
+
+- logout
+- password recovery where applicable
+
+==================================================
+29. COMPONENT ARCHITECTURE
+==================================================
+
+Use reusable components.
+
+Suggested:
+
+components/
+├── ui/
+│   ├── Button
+│   ├── Card
+│   ├── Badge
+│   ├── Dialog
+│   ├── Input
+│   ├── Select
+│   └── ProgressBar
+│
+├── auth/
+│   ├── LoginForm
+│   ├── RegisterForm
+│   ├── GoogleButton
+│   └── AuthGuard
+│
+├── task/
+│   ├── TaskCard
+│   ├── TaskForm
+│   ├── TaskList
+│   ├── TaskDetail
+│   ├── TaskProgress
+│   └── SubtaskList
+│
+├── dashboard/
+│   ├── Greeting
+│   ├── StatsCards
+│   ├── UrgentTask
+│   ├── TodayTasks
+│   └── UpcomingTasks
+│
+├── calendar/
+│   ├── Calendar
+│   ├── CalendarDay
+│   └── DayTasks
+│
+└── notifications/
+    ├── NotificationBell
+    ├── NotificationPanel
+    └── NotificationPopup
+
+Do not duplicate components unnecessarily.
+
+==================================================
+30. BUSINESS LOGIC
+==================================================
+
+Keep business logic separate from UI.
+
+Examples:
+
+calculateUrgency()
+calculateProgress()
+getTodayTasks()
+getUpcomingTasks()
+getUrgentTasks()
+createReminderSchedule()
+cancelFutureReminders()
+validateTaskOwnership()
+
+Do not bury business logic inside UI components.
+
+==================================================
+31. SECURITY
+==================================================
+
+Security is required.
+
+Requirements:
+
+- secure authentication
+- secure sessions
+- server-side authorization
+- database-level user isolation where possible
+- input validation
+- protected routes
+- no secrets in frontend
+- no service-role keys in client code
+- no trusting client-provided userId
+- no cross-user data access
+- safe error messages
+- secure password recovery
+- appropriate CSRF/session protections according to framework/provider
+
+==================================================
+32. ERROR HANDLING
+==================================================
+
+Do not expose technical errors to normal users.
+
+Bad:
+
+"500 Internal Server Error"
+
+Good:
+
+"Yah, tugasnya belum berhasil disimpan.
+Coba lagi."
+
+For network problems:
+
+"Koneksi sedang bermasalah.
+Periksa internetmu lalu coba lagi."
+
+Never silently lose task input.
+
+==================================================
+33. EMPTY STATES
+==================================================
+
+Every empty state must be intentionally designed.
+
+Example:
+
+TUGASMU MASIH KOSONG
+
+Nikmati ketenangan...
+atau tambahkan tugas pertamamu.
+
+[ + TAMBAH TUGAS ]
+
+Do not show blank screens.
+
+==================================================
+34. LOADING STATES
+==================================================
+
+Use:
+
+- skeletons
+- loading indicators
+- disabled mutation buttons
+- optimistic updates where safe
+
+After mutation:
+
+- show immediate feedback
+- handle errors
+- reconcile with server state
+
+==================================================
+35. ACCESSIBILITY
+==================================================
+
+Use semantic HTML.
+
+Support:
+
+- keyboard navigation
+- visible focus states
+- accessible labels
+- dialog semantics
+- screen reader-friendly states
+- sufficient contrast
+- Escape to close dialogs
+- status communication without relying solely on color
+
+Minimum touch target:
+
+44px
+
+==================================================
+36. PERFORMANCE
+==================================================
+
+Avoid unnecessary complexity.
+
+Optimize:
+
+- database queries
+- unnecessary re-renders
+- large bundles
+- image loading
+- repeated network requests
+
+Do not prematurely optimize.
+
+Measure before introducing complicated infrastructure.
+
+==================================================
+37. ENGINEERING PRINCIPLE
+==================================================
+
+DO NOT BUILD EVERYTHING AT ONCE.
+
+Work incrementally.
+
+The preferred development sequence is:
+
+PHASE 1
+Foundation + Design
+
+PHASE 2
+Authentication + Persistence
+
+PHASE 3
+Task Core
+
+PHASE 4
+Progress + Subtasks
+
+PHASE 5
+Planning + Calendar
+
+PHASE 6
+Notifications
+
+PHASE 7
+Polish + QA
+
+==================================================
+38. PHASE 1
+==================================================
+
+Build:
+
+- project foundation
+- app shell
+- navigation
+- design tokens
+- typography
+- reusable UI primitives
+- dashboard with realistic mock data
+- login UI
+- registration UI
+- responsive mobile layout
+- notification popup visual prototype
+
+At this stage:
+
+Do NOT implement complex backend behavior.
+
+The objective is to establish the visual foundation.
+
+==================================================
+39. PHASE 2
+==================================================
+
+Implement:
+
+- real authentication
+- email/password
+- Google Sign-In where supported
+- logout
+- session persistence
+- password recovery
+- protected routes
+- user profile
+- database
+- user ownership
+- authorization
+- row-level security where applicable
+
+Replace dashboard mock data with real user data.
+
+Verify:
+
+User A cannot access User B's data.
+
+==================================================
+40. PHASE 3
+==================================================
+
+Implement:
+
+- create task
+- read task
+- update task
+- delete task
+- subject
+- deadline
+- priority
+- status
+- estimated duration
+
+Everything must use persistent database data.
+
+==================================================
+41. PHASE 4
+==================================================
+
+Implement:
+
+- subtasks
+- progress
+- completion
+- dashboard statistics
+- today tasks
+- urgent tasks
+- upcoming tasks
+
+==================================================
+42. PHASE 5
+==================================================
+
+Implement:
+
+- calendar
+- urgency engine
+- search
+- filtering
+- sorting
+
+==================================================
+43. PHASE 6
+==================================================
+
+Implement:
+
+- reminder scheduling
+- notification records
+- notification center
+- in-app popup
+- browser notifications
+- service worker where appropriate
+- server-side scheduling where appropriate
+
+==================================================
+44. PHASE 7
+==================================================
+
+Polish:
+
+- accessibility
+- responsive behavior
+- error states
+- loading states
+- empty states
+- micro-interactions
+- performance
+- security review
+- database query review
+- mobile QA
+- desktop QA
+
+==================================================
+45. VALIDATION AFTER EVERY PHASE
+==================================================
+
+After every major phase:
+
+1. Run type checking.
+2. Run lint.
+3. Run tests if available.
+4. Run production build.
+5. Check runtime errors.
+6. Inspect browser console.
+7. Inspect network errors.
+8. Test responsive layouts.
+9. Test authentication boundaries where applicable.
+10. Fix regressions before continuing.
+
+Never continue blindly after a failed build.
+
+==================================================
+46. TESTING
+==================================================
+
+At minimum test:
+
+Authentication:
+
+- register
+- login
+- logout
+- invalid credentials
+- session restoration
+- protected route
+- password recovery
+
+Authorization:
+
+- User A can access own tasks
+- User A cannot access User B tasks
+- User A cannot mutate User B tasks
+
+Tasks:
+
+- create
+- edit
+- delete
+- complete
+- deadline
+- priority
+
+Subtasks:
+
+- create
+- toggle
+- progress calculation
+
+Notifications:
+
+- reminder creation
+- duplicate prevention
+- completion cancels future irrelevant reminder
+- in-app popup
+- browser permission states
+
+Responsive:
+
+- desktop
+- tablet
+- mobile
+
+==================================================
+47. DEFINITION OF DONE
+==================================================
+
+The MVP is complete when this end-to-end flow works:
+
+Register
+↓
+Create account
+↓
+Login
+↓
+Session persists
+↓
+Onboarding
+↓
+Create subject
+↓
+Create task
+↓
+Set deadline
+↓
+Set priority
+↓
+Add subtasks
+↓
+Task persists to database
+↓
+Task appears on dashboard
+↓
+Task appears on calendar
+↓
+Urgency calculated
+↓
+Reminder created
+↓
+Notification appears when appropriate
+↓
+User completes subtasks
+↓
+Progress updates
+↓
+User completes task
+↓
+Task becomes COMPLETED
+↓
+Future irrelevant reminders are cancelled
+↓
+Logout
+↓
+Login again
+↓
+All data is still present
+
+==================================================
+48. V2 NON-NEGOTIABLES
+==================================================
+
+These are mandatory.
+
+1. REAL AUTHENTICATION
+
+Do not use fake authentication.
+
+2. REAL DATABASE
+
+Do not use localStorage as the primary task database.
+
+3. REAL USER ISOLATION
+
+Users must not access each other's records.
+
+4. REAL SESSION MANAGEMENT
+
+Sessions must persist appropriately.
+
+5. REAL AUTHORIZATION
+
+Authorization must not depend only on frontend code.
+
+6. REAL NOTIFICATION ARCHITECTURE
+
+Do not rely solely on browser timers for future reminders.
+
+7. SECURITY
+
+Never expose private secrets in client code.
+
+8. DATA INTEGRITY
+
+Do not silently lose user data.
+
+9. RESPONSIVE UX
+
+The application must work properly on mobile and desktop.
+
+10. DESIGN CONSISTENCY
+
+All pages must use the same design system.
+
+==================================================
+49. DO NOT OVERENGINEER
+==================================================
+
+Avoid:
+
+- unnecessary dependencies
+- unnecessary abstractions
+- microservices
+- complicated state management unless needed
+- premature AI features
+- unnecessary APIs
+- complicated infrastructure
+
+Prefer:
+
+simple
+maintainable
+secure
+testable
+responsive
+accessible
+
+==================================================
+50. FUTURE EXTENSIBILITY
+==================================================
+
+Do not implement these in MVP unless already required by PRD_v2.md:
+
+- recurring tasks
+- Pomodoro
+- study statistics
+- streaks
+- advanced analytics
+- calendar integrations
+- AI scheduling
+- smart study planning
+- PWA enhancements
+
+But keep the architecture extensible for them.
+
+==================================================
+51. IMPORTANT PRODUCT PRINCIPLE
+==================================================
+
+TASKORA should not make the user think about task management.
+
+It should make task management easier.
+
+The user should be able to:
+
+open app
+↓
+see what matters
+↓
+start working
+↓
+finish task
+↓
+move on
+
+Every feature should be evaluated against this principle.
+
+==================================================
+52. FIRST ACTION — START HERE
+==================================================
+
+DO NOT immediately write the entire application.
+
+First:
+
+1. Read PRD_v2.md completely.
+2. Inspect the repository.
+3. Inspect the existing stack.
+4. Inspect package configuration.
+5. Inspect environment configuration without exposing secrets.
+6. Determine whether the project is new or existing.
+7. Identify the simplest appropriate architecture.
+8. Create a concise implementation plan.
+9. Identify potential technical risks.
+10. State your proposed stack and why.
+11. Begin PHASE 1 only.
+
+Do not ask unnecessary questions.
+
+If a reasonable engineering decision can be made from the PRD, make the decision and document it.
+
+==================================================
+53. PHASE 1 DELIVERABLE
+==================================================
+
+The first implementation should contain:
+
+- polished TASKORA app shell
+- responsive navigation
+- design token system
+- Neo-Brutalist UI
+- typography
+- reusable Button
+- reusable Card
+- reusable Badge
+- reusable Input
+- reusable Dialog
+- dashboard
+- realistic mock tasks
+- task cards
+- urgent task section
+- today's tasks
+- upcoming tasks
+- login page
+- registration page
+- responsive mobile navigation
+- Add Task visual interaction
+- notification popup visual prototype
+
+The first phase should look like a polished product prototype.
+
+Do not implement authentication backend yet unless needed to establish the architecture cleanly.
+
+==================================================
+54. FINAL OPERATING RULE
+==================================================
+
+Think before coding.
+
+Inspect before changing.
+
+Build incrementally.
+
+Validate after each phase.
+
+Prefer simple architecture.
+
+Protect user data.
+
+Do not fake core functionality.
+
+Do not sacrifice UX for implementation convenience.
+
+Do not sacrifice security for speed.
+
+Do not sacrifice design consistency for individual page creativity.
+
+Build TASKORA as if it will eventually be used by thousands of students.
+
+START WITH PHASE 1.
