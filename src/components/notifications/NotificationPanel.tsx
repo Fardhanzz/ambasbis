@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Reminder } from '../../types';
 import { formatDeadlineDate } from '../../utils/urgency';
-import { Bell, X } from 'lucide-react';
+import { Bell, X, CheckCircle2 } from 'lucide-react';
 
 export interface NotificationPanelProps {
   isOpen: boolean;
@@ -10,7 +10,7 @@ export interface NotificationPanelProps {
   onMarkAsRead: (id: string) => void;
   onMarkAllAsRead: () => void;
   onOpenTask: (taskId: string) => void;
-  onRequestBrowserPermission: () => void;
+  onRequestBrowserPermission?: () => void;
 }
 
 export const NotificationPanel: React.FC<NotificationPanelProps> = ({
@@ -24,7 +24,9 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const unreadCount = reminders.filter(r => !r.read).length;
+  const unreadCount = reminders.filter((r) => !r.read).length;
+  const isBrowserNotificationGranted =
+    typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted';
 
   return (
     <div
@@ -101,7 +103,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
       <div
         style={{
           padding: '10px 14px',
-          backgroundColor: '#FFF9E6',
+          backgroundColor: isBrowserNotificationGranted ? '#EDFBF0' : '#FFF9E6',
           borderBottom: '2px solid var(--color-black)',
           display: 'flex',
           alignItems: 'center',
@@ -109,16 +111,28 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
           gap: '8px'
         }}
       >
-        <div style={{ fontSize: '0.78rem', fontWeight: 700, lineHeight: 1.3 }}>
-          🔔 Aktifkan pengingat browser agar tidak lupa tugas!
-        </div>
-        <button
-          onClick={onRequestBrowserPermission}
-          className="neo-btn neo-btn-sm neo-btn-yellow"
-          style={{ padding: '4px 8px', fontSize: '0.72rem' }}
-        >
-          IZINKAN
-        </button>
+        {isBrowserNotificationGranted ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 800, color: '#15803D' }}>
+            <CheckCircle2 size={15} strokeWidth={2.5} />
+            <span>Pengingat peramban aktif</span>
+          </div>
+        ) : (
+          <>
+            <div style={{ fontSize: '0.76rem', fontWeight: 700, lineHeight: 1.3 }}>
+              🔔 Aktifkan pengingat deadline peramban!
+            </div>
+            {onRequestBrowserPermission && (
+              <button
+                type="button"
+                onClick={onRequestBrowserPermission}
+                className="neo-btn neo-btn-sm neo-btn-yellow"
+                style={{ padding: '4px 8px', fontSize: '0.72rem', fontWeight: 900 }}
+              >
+                IZINKAN
+              </button>
+            )}
+          </>
+        )}
       </div>
 
       {/* Reminder List */}
@@ -129,7 +143,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
               Belum ada notifikasi
             </p>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', marginTop: '4px' }}>
-              Kamu akan menerima peringatan saat deadline tugas semakin dekat.
+              Pengingat akan muncul otomatis saat tugas mencapai H-3, H-1, atau Hari H.
             </p>
           </div>
         ) : (
@@ -156,7 +170,12 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
                     style={{
                       fontSize: '0.68rem',
                       fontWeight: 900,
-                      backgroundColor: rem.type === 'DEADLINE_HARI_H' ? 'var(--color-red)' : rem.type === 'DEADLINE_H_MIN_1' ? 'var(--color-yellow)' : 'var(--color-blue)',
+                      backgroundColor:
+                        rem.type === 'DEADLINE_HARI_H'
+                          ? 'var(--color-red)'
+                          : rem.type === 'DEADLINE_H_MIN_1'
+                          ? 'var(--color-yellow)'
+                          : 'var(--color-blue)',
                       color: rem.type === 'DEADLINE_HARI_H' ? '#FFFFFF' : 'var(--color-black)',
                       padding: '2px 6px',
                       borderRadius: '4px',

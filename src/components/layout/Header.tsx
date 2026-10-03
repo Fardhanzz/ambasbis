@@ -127,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            background: 'var(--color-white)',
+            background: user?.email ? 'var(--color-white)' : 'var(--color-yellow)',
             border: 'var(--border-thick)',
             borderRadius: 'var(--radius-md)',
             boxShadow: '3px 3px 0 var(--color-black)',
@@ -156,7 +156,8 @@ export const Header: React.FC<HeaderProps> = ({
                 width: '24px',
                 height: '24px',
                 borderRadius: '50%',
-                backgroundColor: 'var(--color-purple)',
+                backgroundColor: user?.email ? 'var(--color-purple)' : 'var(--color-black)',
+                color: user?.email ? 'var(--color-black)' : 'var(--color-yellow)',
                 border: '2px solid var(--color-black)',
                 display: 'flex',
                 alignItems: 'center',
@@ -166,7 +167,7 @@ export const Header: React.FC<HeaderProps> = ({
               <User size={14} strokeWidth={2.5} />
             </div>
           )}
-          <span>{user?.name ? user.name.split(' ')[0].toUpperCase() : 'AKUN'}</span>
+          <span>{user?.email ? user.name.split(' ')[0].toUpperCase() : 'MASUK / DAFTAR'}</span>
         </button>
       </div>
     </header>

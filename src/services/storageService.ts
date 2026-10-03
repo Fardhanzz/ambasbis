@@ -1,5 +1,5 @@
 import type { Task, Subject, Reminder, UserProfile } from '../types';
-import { initialMockTasks, mockSubjects, mockReminders, mockUser } from '../data/mockData';
+import { mockSubjects, mockUser } from '../data/mockData';
 
 export const storageService = {
   isGuestUser(userId?: string | null): boolean {
@@ -26,7 +26,18 @@ export const storageService = {
   },
 
   hasUserEverCreatedTasks(userId: string): boolean {
-    if (this.isGuestUser(userId)) return false;
+    if (this.isGuestUser(userId)) {
+      try {
+        const guestSaved = localStorage.getItem('ambasbis_tasks_guest');
+        if (guestSaved) {
+          const parsed = JSON.parse(guestSaved);
+          return Array.isArray(parsed) && parsed.length > 0;
+        }
+      } catch {
+        return false;
+      }
+      return false;
+    }
     try {
       return Boolean(localStorage.getItem(`ambasbis_user_has_tasks_${userId}`));
     } catch {
@@ -45,7 +56,7 @@ export const storageService = {
 
   /**
    * Load tasks for a specific user:
-   * - If Guest: loads guest tasks or defaults to initialMockTasks for demonstration.
+   * - If Guest: loads guest tasks from localStorage if created, or returns empty array [] (clean start).
    * - If New Account: returns empty array [] (starts from zero, no demonstration tasks).
    * - If Returning Account: loads their previously saved tasks and progress.
    */
@@ -55,11 +66,22 @@ export const storageService = {
     if (isGuest) {
       try {
         const guestSaved = localStorage.getItem('ambasbis_tasks_guest');
-        if (guestSaved) return JSON.parse(guestSaved);
+        if (guestSaved) {
+          const parsed = JSON.parse(guestSaved);
+          if (Array.isArray(parsed)) {
+            // Clean up old static mock tasks that might have leaked in previous builds
+            const hasOldMock = parsed.some(t => t.id === 'task_01' || t.userId === 'usr_fardhan_01');
+            if (hasOldMock) {
+              localStorage.removeItem('ambasbis_tasks_guest');
+              return [];
+            }
+            return parsed;
+          }
+        }
       } catch {
         // ignore
       }
-      return initialMockTasks;
+      return [];
     }
 
     // Authenticated User: Check if already initialized
@@ -70,10 +92,14 @@ export const storageService = {
       const saved = localStorage.getItem(key);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          this.markUserHasCreatedTasks(userId);
+        if (Array.isArray(parsed)) {
+          // Filter out any legacy dummy mock task
+          const filtered = parsed.filter(t => t.id !== 'task_01' || t.userId === userId);
+          if (filtered.length > 0) {
+            this.markUserHasCreatedTasks(userId);
+          }
+          return filtered;
         }
-        return parsed;
       }
     } catch (e) {
       console.warn('Gagal membaca data tugas pengguna:', e);
@@ -134,17 +160,28 @@ export const storageService = {
     if (isGuest) {
       try {
         const guestSaved = localStorage.getItem('ambasbis_reminders_guest');
-        if (guestSaved) return JSON.parse(guestSaved);
+        if (guestSaved) {
+          const parsed = JSON.parse(guestSaved);
+          if (Array.isArray(parsed)) {
+            // Remove any legacy Kimia dummy reminder
+            return parsed.filter(r => r.taskId !== 'task_01' && r.subjectName !== 'Kimia');
+          }
+        }
       } catch {
         // ignore
       }
-      return mockReminders;
+      return [];
     }
 
     const key = `ambasbis_reminders_${userId}`;
     try {
       const saved = localStorage.getItem(key);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(r => r.taskId !== 'task_01' && r.subjectName !== 'Kimia');
+        }
+      }
     } catch {
       // ignore
     }
@@ -163,7 +200,15 @@ export const storageService = {
   loadUserProfile(): UserProfile {
     try {
       const saved = localStorage.getItem('ambasbis_user');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // If it was the old hardcoded demo user, clear it to start cleanly as guest
+        if (parsed && (parsed.id === 'usr_fardhan_01' || parsed.email === 'fardhan.student@ambasbis.edu')) {
+          localStorage.removeItem('ambasbis_user');
+          return mockUser;
+        }
+        return parsed;
+      }
     } catch {
       // ignore
     }

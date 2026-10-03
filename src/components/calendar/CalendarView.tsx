@@ -99,7 +99,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div className="calendar-header-nav-buttons">
           <Button variant="white" size="sm" icon={<ChevronLeft size={16} strokeWidth={3} />} onClick={prevMonth}>
             BULAN LALU
           </Button>
@@ -120,12 +120,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
       </div>
 
-      {/* Main Grid & Side Details Split */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(280px, 1fr)', gap: '24px' }}>
+      {/* Main Grid & Side Details Split (Responsive on mobile) */}
+      <div className="calendar-layout-grid">
         {/* Calendar Grid Card */}
-        <Card variant="white" style={{ padding: '20px' }}>
+        <Card variant="white" className="calendar-card-body">
           {/* Day of Week Headers */}
           <div
+            className="calendar-day-header"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(7, 1fr)',
@@ -147,10 +148,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </div>
 
           {/* Calendar Day Cells */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px' }}>
+          <div className="calendar-days-grid">
             {/* Empty padding slots before day 1 */}
             {Array.from({ length: startDay }).map((_, i) => (
-              <div key={`empty-${i}`} style={{ minHeight: '65px', opacity: 0.2 }} />
+              <div key={`empty-${i}`} className="calendar-day-cell" style={{ opacity: 0.15, pointerEvents: 'none' }} />
             ))}
 
             {/* Days 1 to totalDays */}
@@ -163,31 +164,24 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               return (
                 <div
                   key={`day-${dayNumber}`}
+                  className="calendar-day-cell"
                   onClick={() => setSelectedDate(new Date(year, month, dayNumber))}
                   style={{
-                    minHeight: '68px',
                     border: selected ? '2.5px solid var(--color-black)' : '1.5px solid #DDD1C7',
-                    borderRadius: '8px',
                     backgroundColor: selected
                       ? 'var(--color-yellow)'
                       : today
                       ? '#FFE5E3'
                       : '#FFFFFF',
-                    boxShadow: selected ? '2px 2px 0 var(--color-black)' : 'none',
-                    padding: '6px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    cursor: 'pointer',
-                    transition: 'all 0.1s ease'
+                    boxShadow: selected ? '2px 2px 0 var(--color-black)' : 'none'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span
+                      className="calendar-day-number"
                       style={{
                         fontFamily: 'var(--font-heading)',
                         fontWeight: 900,
-                        fontSize: '0.85rem',
                         color: today ? 'var(--color-red)' : 'var(--color-black)'
                       }}
                     >
@@ -195,12 +189,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     </span>
                     {today && (
                       <span
+                        className="calendar-today-badge"
                         style={{
-                          fontSize: '0.62rem',
                           fontWeight: 900,
                           backgroundColor: 'var(--color-red)',
                           color: '#FFFFFF',
-                          padding: '1px 4px',
                           borderRadius: '4px'
                         }}
                       >
@@ -217,10 +210,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       return (
                         <div
                           key={t.id}
+                          className="calendar-task-dot"
                           title={`${t.title} (${urgencyInfo.label})`}
                           style={{
-                            width: '8px',
-                            height: '8px',
                             borderRadius: '50%',
                             backgroundColor: urgencyInfo.bg,
                             border: '1px solid var(--color-black)'
@@ -236,7 +228,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </Card>
 
         {/* Selected Date Inspector Side Card */}
-        <Card variant="cream" style={{ padding: '20px' }}>
+        <Card variant="cream" className="calendar-inspector-card" style={{ padding: '20px' }}>
           <div style={{ borderBottom: '2px solid var(--color-black)', paddingBottom: '12px', marginBottom: '14px' }}>
             <span
               style={{

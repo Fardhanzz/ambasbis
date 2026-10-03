@@ -362,7 +362,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           title="Klik untuk membuka autentikasi / profil akun"
         >
-          {user.avatar ? (
+          {user.email && user.avatar ? (
             <img
               src={user.avatar}
               alt={user.name}
@@ -381,7 +381,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 width: '38px',
                 height: '38px',
                 borderRadius: '8px',
-                backgroundColor: 'var(--color-purple)',
+                backgroundColor: user.email ? 'var(--color-purple)' : 'var(--color-yellow)',
                 border: '2px solid var(--color-black)',
                 display: 'flex',
                 alignItems: 'center',
@@ -393,7 +393,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 flexShrink: 0
               }}
             >
-              {user.name ? user.name.charAt(0).toUpperCase() : 'P'}
+              {user.email ? (user.name ? user.name.charAt(0).toUpperCase() : 'P') : '👤'}
             </div>
           )}
           <div style={{ minWidth: 0, flex: 1 }}>
@@ -407,19 +407,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 textOverflow: 'ellipsis'
               }}
             >
-              {user.name}
+              {user.email ? user.name : 'Tamu (Belum Masuk)'}
             </p>
             <p
               style={{
                 fontSize: '0.72rem',
                 fontWeight: 600,
-                color: 'var(--color-text-muted)',
+                color: user.email ? 'var(--color-text-muted)' : 'var(--color-red)',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
               }}
             >
-              {user.email || `${user.timezone} (WIB)`}
+              {user.email || 'Klik untuk Masuk / Daftar'}
             </p>
           </div>
         </div>

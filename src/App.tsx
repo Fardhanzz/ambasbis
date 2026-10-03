@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import type { Task, Subject, Reminder, UserProfile, TaskStatus } from './types';
 import { calculateUrgency } from './utils/urgency';
-import { getTaskReminderCategory } from './utils/reminder';
+import { getTaskReminderCategory, generateRemindersFromTasks } from './utils/reminder';
 
 // Layout Components
 import { Header } from './components/layout/Header';
@@ -14,6 +14,7 @@ import { StatsCards } from './components/dashboard/StatsCards';
 import { UrgentTaskCard } from './components/dashboard/UrgentTaskCard';
 import { TodayTasks } from './components/dashboard/TodayTasks';
 import { UpcomingTasks } from './components/dashboard/UpcomingTasks';
+import { GuestEmptyState } from './components/dashboard/GuestEmptyState';
 
 // Task & Calendar Components
 import { TaskListView } from './components/task/TaskListView';
@@ -140,16 +141,44 @@ export function App() {
 
   const hasShownPopupRef = useRef(false);
 
-  // Trigger prototype in-app notification popup after 1.2 seconds for eligible H-3, H-1, Hari H
+  // Synchronize real reminders from tasks (strictly H-3, H-1, Hari H)
+  useEffect(() => {
+    if (!tasks || tasks.length === 0) {
+      if (reminders.length > 0) {
+        setReminders([]);
+      }
+      return;
+    }
+
+    const generated = generateRemindersFromTasks(tasks, subjects, user.id);
+    setReminders(prevReminders => {
+      const readMap = new Map(prevReminders.map(r => [r.id, r.read]));
+      const updated = generated.map(gen => ({
+        ...gen,
+        read: readMap.get(gen.id) ?? false
+      }));
+
+      const prevSig = prevReminders.map(r => `${r.id}:${r.read}`).join('|');
+      const nextSig = updated.map(r => `${r.id}:${r.read}`).join('|');
+      if (prevSig !== nextSig) {
+        return updated;
+      }
+      return prevReminders;
+    });
+  }, [tasks, subjects, user.id]);
+
+  // Trigger in-app notification popup ONLY for unread reminders of real active tasks (H-3, H-1, Hari H)
   useEffect(() => {
     if (hasShownPopupRef.current) return;
+    if (reminders.length === 0) return;
+
     const timer = setTimeout(() => {
-      const urgentReminder = reminders.find(r => !r.read) || reminders[0];
+      const urgentReminder = reminders.find(r => !r.read);
       if (urgentReminder) {
         setPopupReminder(urgentReminder);
         hasShownPopupRef.current = true;
       }
-    }, 1200);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [reminders]);
@@ -459,6 +488,40 @@ export function App() {
         {currentTab === 'dashboard' && (
           <div>
             <Greeting userName={user.name} urgentCount={stats.urgentCount} />
+
+            {/* Guest notice banner if user created tasks in guest mode */}
+            {storageService.isGuestUser(user.id) && tasks.length > 0 && (
+              <div
+                style={{
+                  backgroundColor: '#FFF2D9',
+                  border: 'var(--border-thick)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '12px 18px',
+                  marginBottom: '20px',
+                  boxShadow: '3px 3px 0 var(--color-black)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '12px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '1.25rem' }}>💡</span>
+                  <p style={{ margin: 0, fontSize: '0.86rem', fontWeight: 700, color: 'var(--color-black)' }}>
+                    Anda sedang dalam <strong>Mode Tamu</strong>. Simpan tugas Anda ke akun cloud agar tidak hilang saat riwayat peramban dibersihkan.
+                  </p>
+                </div>
+                <Button
+                  variant="yellow"
+                  size="sm"
+                  onClick={() => setIsAuthModalOpen(true)}
+                >
+                  SIMPAN KE AKUN (MASUK/DAFTAR)
+                </Button>
+              </div>
+            )}
+
             <StatsCards
               activeCount={stats.activeCount}
               urgentCount={stats.urgentCount}
@@ -467,78 +530,85 @@ export function App() {
             />
 
             {tasks.length === 0 ? (
-              (() => {
-                const isBrandNew = !storageService.hasUserEverCreatedTasks(user.id);
-                return (
-                  <div
-                    style={{
-                      background: '#FFFFFF',
-                      border: 'var(--border-thick)',
-                      borderRadius: 'var(--radius-lg)',
-                      padding: '36px 24px',
-                      boxShadow: 'var(--shadow-neo)',
-                      textAlign: 'center',
-                      marginBottom: '32px'
-                    }}
-                  >
+              storageService.isGuestUser(user.id) ? (
+                <GuestEmptyState
+                  onOpenAuth={() => setIsAuthModalOpen(true)}
+                  onOpenAddTask={() => setIsTaskFormOpen(true)}
+                />
+              ) : (
+                (() => {
+                  const isBrandNew = !storageService.hasUserEverCreatedTasks(user.id);
+                  return (
                     <div
                       style={{
-                        width: '64px',
-                        height: '64px',
-                        backgroundColor: isBrandNew ? 'var(--color-yellow)' : 'var(--color-green)',
+                        background: '#FFFFFF',
                         border: 'var(--border-thick)',
-                        borderRadius: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '2rem',
-                        boxShadow: '4px 4px 0 var(--color-black)',
-                        margin: '0 auto 16px auto'
+                        borderRadius: 'var(--radius-lg)',
+                        padding: '36px 24px',
+                        boxShadow: 'var(--shadow-neo)',
+                        textAlign: 'center',
+                        marginBottom: '32px'
                       }}
                     >
-                      {isBrandNew ? '🚀' : '🎉'}
+                      <div
+                        style={{
+                          width: '64px',
+                          height: '64px',
+                          backgroundColor: isBrandNew ? 'var(--color-yellow)' : 'var(--color-green)',
+                          border: 'var(--border-thick)',
+                          borderRadius: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '2rem',
+                          boxShadow: '4px 4px 0 var(--color-black)',
+                          margin: '0 auto 16px auto'
+                        }}
+                      >
+                        {isBrandNew ? '🚀' : '🎉'}
+                      </div>
+                      <h3
+                        style={{
+                          fontFamily: 'var(--font-heading)',
+                          fontSize: '1.4rem',
+                          fontWeight: 900,
+                          textTransform: 'uppercase',
+                          marginBottom: '8px'
+                        }}
+                      >
+                        {isBrandNew ? 'Daftar Tugas Masih Kosong' : 'Semua Tugas Telah Selesai!'}
+                      </h3>
+                      <p
+                        style={{
+                          color: 'var(--color-text-muted)',
+                          fontSize: '0.95rem',
+                          maxWidth: '460px',
+                          margin: '0 auto 24px auto',
+                          lineHeight: 1.5
+                        }}
+                      >
+                        {isBrandNew ? (
+                          <>
+                            Selamat datang di <strong>AMBASBIS</strong>! Akun Anda baru dan bersih. Mulai catat tugas sekolah atau kuliah pertama Anda dan taklukkan deadline!
+                          </>
+                        ) : (
+                          <>
+                            Luar biasa! Tidak ada beban tugas aktif saat ini. Nikmati waktu istirahatmu atau mulai catat tugas baru jika ada tugas berikutnya.
+                          </>
+                        )}
+                      </p>
+                      <Button
+                        variant={isBrandNew ? 'yellow' : 'primary'}
+                        size="lg"
+                        icon={<Plus size={20} strokeWidth={3} />}
+                        onClick={() => setIsTaskFormOpen(true)}
+                      >
+                        {isBrandNew ? '+ Tambah Tugas Pertamamu' : '+ Buat Tugas Baru'}
+                      </Button>
                     </div>
-                    <h3
-                      style={{
-                        fontFamily: 'var(--font-heading)',
-                        fontSize: '1.4rem',
-                        fontWeight: 900,
-                        textTransform: 'uppercase',
-                        marginBottom: '8px'
-                      }}
-                    >
-                      {isBrandNew ? 'Daftar Tugas Masih Kosong' : 'Semua Tugas Telah Selesai!'}
-                    </h3>
-                    <p
-                      style={{
-                        color: 'var(--color-text-muted)',
-                        fontSize: '0.95rem',
-                        maxWidth: '460px',
-                        margin: '0 auto 24px auto',
-                        lineHeight: 1.5
-                      }}
-                    >
-                      {isBrandNew ? (
-                        <>
-                          Selamat datang di <strong>AMBASBIS</strong>! Akun Anda baru dan bersih. Mulai catat tugas sekolah atau kuliah pertama Anda dan taklukkan deadline!
-                        </>
-                      ) : (
-                        <>
-                          Luar biasa! Tidak ada beban tugas aktif saat ini. Nikmati waktu istirahatmu atau mulai catat tugas baru jika ada tugas berikutnya.
-                        </>
-                      )}
-                    </p>
-                    <Button
-                      variant={isBrandNew ? 'yellow' : 'primary'}
-                      size="lg"
-                      icon={<Plus size={20} strokeWidth={3} />}
-                      onClick={() => setIsTaskFormOpen(true)}
-                    >
-                      {isBrandNew ? '+ Tambah Tugas Pertamamu' : '+ Buat Tugas Baru'}
-                    </Button>
-                  </div>
-                );
-              })()
+                  );
+                })()
+              )
             ) : (
               <>
                 <UrgentTaskCard
