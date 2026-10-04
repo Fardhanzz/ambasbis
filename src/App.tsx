@@ -29,6 +29,7 @@ import { AuthModal } from './components/auth/AuthModal';
 import { OverdueWarningModal } from './components/common/OverdueWarningModal';
 import { AddSubjectModal } from './components/subject/AddSubjectModal';
 import { SubjectOnboardingModal } from './components/subject/SubjectOnboardingModal';
+import { PwaInstallPrompt } from './components/pwa/PwaInstallPrompt';
 import { Button } from './components/ui/Button';
 import { Plus } from 'lucide-react';
 import { authService } from './services/authService';
@@ -483,6 +484,9 @@ export function App() {
           currentTab={currentTab}
           user={user}
         />
+
+        {/* PWA Mobile Install Banner / Prompt */}
+        <PwaInstallPrompt />
 
         {/* Tab 1: Dashboard */}
         {currentTab === 'dashboard' && (

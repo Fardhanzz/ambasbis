@@ -357,11 +357,11 @@ h1, h2, h3, h4, h5, h6 {
     display: none;
   }
   .main-content-area {
-    padding: 18px 16px 85px 16px;
+    padding: 18px 16px calc(90px + env(safe-area-inset-bottom, 0px)) 16px;
   }
 }
 
-/* Bottom Navigation on Mobile */
+/* Bottom Navigation on Mobile (PWA & Mobile friendly with safe-area support) */
 .bottom-nav-mobile {
   display: none;
 }
@@ -373,16 +373,18 @@ h1, h2, h3, h4, h5, h6 {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 70px;
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding: 0 10px env(safe-area-inset-bottom, 0px) 10px;
     background-color: var(--color-white);
     border-top: var(--border-thick);
     z-index: 200;
     align-items: center;
     justify-content: space-around;
-    padding: 0 10px;
     box-shadow: 0px -4px 0px rgba(23, 19, 19, 0.05);
+    -webkit-tap-highlight-color: transparent;
   }
 }
+
 
 /* Responsive Calendar Layout (Fix Mobile Squishing) */
 .calendar-layout-grid {
